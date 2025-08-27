@@ -1,53 +1,51 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+// commands/prefix/autoplay.js
+const { EmbedBuilder } = require('discord.js');
 const Server = require('../../models/Server');
 const shiva = require('../../shiva');
 
 const COMMAND_SECURITY_TOKEN = shiva.SECURITY_TOKEN;
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('autoplay')
-        .setDescription('Toggle autoplay mode')
-        .addBooleanOption(option =>
-            option.setName('enabled')
-                .setDescription('Enable or disable autoplay')
-                .setRequired(true)
-        ),
+    name: "autoplay",
+    description: "Enable or disable autoplay mode",
+    usage: "?autoplay [d]",
     securityToken: COMMAND_SECURITY_TOKEN,
 
-    async execute(interaction, client) {
+    async execute(message, args, client) {
         if (!shiva || !shiva.validateCore || !shiva.validateCore()) {
             const embed = new EmbedBuilder()
                 .setDescription('❌ System core offline - Command unavailable')
                 .setColor('#FF0000');
-            return interaction.reply({ embeds: [embed], ephemeral: true }).catch(() => {});
+            return message.reply({ embeds: [embed] }).catch(() => {});
         }
 
-        interaction.shivaValidated = true;
-        interaction.securityToken = COMMAND_SECURITY_TOKEN;
-
-        await interaction.deferReply();
+        message.shivaValidated = true;
+        message.securityToken = COMMAND_SECURITY_TOKEN;
 
         const ConditionChecker = require('../../utils/checks');
         const checker = new ConditionChecker(client);
-        
+
         try {
             const conditions = await checker.checkMusicConditions(
-                interaction.guild.id, 
-                interaction.user.id, 
-                interaction.member.voice?.channelId
+                message.guild.id,
+                message.author.id,
+                message.member.voice?.channelId
             );
 
-            const canUse = await checker.canUseMusic(interaction.guild.id, interaction.user.id);
+            const canUse = await checker.canUseMusic(message.guild.id, message.author.id);
             if (!canUse) {
-                const embed = new EmbedBuilder().setDescription('❌ You need DJ permissions to change autoplay settings!');
-                return interaction.editReply({ embeds: [embed] })
-                    .then(() => setTimeout(() => interaction.deleteReply().catch(() => {}), 3000));
+                const embed = new EmbedBuilder()
+                    .setDescription('❌ You need DJ permissions to change autoplay settings!')
+                    .setColor('Red');
+                return message.reply({ embeds: [embed] })
+                    .then(msg => setTimeout(() => msg.delete().catch(() => {}), 3000));
             }
 
-            const enabled = interaction.options.getBoolean('enabled');
+            // args চেক করব
+            const enabled = !(args[0] && args[0].toLowerCase() === "d");
 
-            await Server.findByIdAndUpdate(interaction.guild.id, {
+            // MongoDB তে save করব
+            await Server.findByIdAndUpdate(message.guild.id, {
                 'settings.autoplay': enabled
             }, { upsert: true });
 
@@ -56,16 +54,19 @@ module.exports = {
                 player.setAutoplay = enabled;
             }
 
-            const embed = new EmbedBuilder().setDescription(`🎲 Autoplay **${enabled ? 'enabled' : 'disabled'}**`);
-            return interaction.editReply({ embeds: [embed] })
-                .then(() => setTimeout(() => interaction.deleteReply().catch(() => {}), 3000));
+            const embed = new EmbedBuilder()
+                .setDescription(`🎲 Autoplay **${enabled ? 'enabled' : 'disabled'}**`)
+                .setColor('Green');
+            return message.reply({ embeds: [embed] })
+                .then(msg => setTimeout(() => msg.delete().catch(() => {}), 3000));
 
         } catch (error) {
-            console.error('Autoplay command error:', error);
-            const embed = new EmbedBuilder().setDescription('❌ An error occurred while toggling autoplay!');
-            return interaction.editReply({ embeds: [embed] })
-                .then(() => setTimeout(() => interaction.deleteReply().catch(() => {}), 3000));
+            console.error('Autoplay prefix command error:', error);
+            const embed = new EmbedBuilder()
+                .setDescription('❌ An error occurred while toggling autoplay!')
+                .setColor('Red');
+            return message.reply({ embeds: [embed] })
+                .then(msg => setTimeout(() => msg.delete().catch(() => {}), 3000));
         }
     }
 };
-
