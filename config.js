@@ -1,10 +1,10 @@
 /**
- * Ultimate Music Bot - 
+ * ZenMusic Bot - 
  * 
  * @fileoverview 
  * @module ConfigurationManager
- * @version 1.0.0
- * @author GlaceYT
+ * @version 4.0.0
+ * @author Latex
  */
 
 const EnvironmentVariableProcessor = require('process').env;
@@ -41,10 +41,10 @@ class EnterpriseConfigurationManager {
              * Customize your bot's appearance and basic behavior
              */
             bot: {
-                prefix: EnvironmentVariableProcessor.BOT_PREFIX || "!",  // 👈 prefix (!, ?, etc)
-                ownerIds: ["1004206704994566164"],      // 👈 ADD YOUR DISCORD ID HERE
+                prefix: EnvironmentVariableProcessor.BOT_PREFIX || "?",  // 👈 prefix (!, ?, etc)
+                ownerIds: ["1355170681330991145","927208085515280425"],      // 👈 ADD YOUR DISCORD ID HERE
                 embedColor: 0x00AE86,               // 👈 Bot embed color (hex)
-                supportServer: "https://discord.gg/xQF9f9yUEM",    // 👈 Your support server link
+                supportServer: "https://discord.gg/56uzCcbVDs",    // 👈 Your support server link
                 defaultStatus: "🎵 Ready for music!"         // 👈 Bot status message
             },
             
@@ -101,3 +101,4 @@ module.exports = primaryApplicationConfiguration;
  * Never share your bot token or database URI publicly!
  * Use environment variables in production!
  */
+
