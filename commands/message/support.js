@@ -25,7 +25,7 @@ module.exports = {
                 .setColor(0x1DB954)
                 .setDescription(
                     'Need help or have questions? Join our official support server:\n' +
-                    '[Support Server](https://discord.gg/xQF9f9yUEM)\n\n' +
+                    '[Support Server](https://discord.gg/56uzCcbVDs)\n\n' +
                     'For direct inquiries, contact: **@latexx1top**\n\n' +
                     'Website: https://guns.lol/latexx1top'
         
@@ -40,4 +40,5 @@ module.exports = {
         }
     }
 };
+
 
